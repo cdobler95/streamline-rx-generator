@@ -9,7 +9,7 @@ def load_data():
     Load the CSV you uploaded and pull out the four fields we need:
     drug_name, dose (strength), form, route.
     """
-    df = pd.read_csv("drugs.csv")          # ← file you just uploaded
+    df = pd.read_csv("drugs.csv", encoding="ISO-8859-1")          # ← file you just uploaded
 
     # 1️⃣  Rename columns we care about
     df = df.rename(
