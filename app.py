@@ -8,23 +8,25 @@ st.title("💊 Prescription Generator")
 @st.cache_data
 def load_data():
     try:
-        df = pd.read_csv("drugs.csv")  # Try default (UTF-8)
+        df = pd.read_csv("drugs.csv", encoding="utf-8")
     except UnicodeDecodeError:
-        df = pd.read_csv("drugs.csv", encoding="ISO-8859-1")  # Fallback
+        df = pd.read_csv("drugs.csv", encoding="ISO-8859-1")
 
-    # Rename columns
-    df = df.rename(columns={"brand_name": "drug_name", "dosage_form": "form"})
+    df = df.rename(columns={
+        "brand_name": "drug_name",
+        "dosage_form": "form"
+    })
 
-    # Extract dose from active_ingredients (e.g., (30MG))
+    # Extract strength (e.g., (30MG)) from active_ingredients
     strength_re = re.compile(r"\(([^)]+)\)")
     df["dose"] = (
         df["active_ingredients"]
+        .astype(str)
         .str.extract(strength_re, expand=False)
         .fillna("")
         .str.replace(r"\s+", "", regex=True)
     )
 
-    # Final clean dataset
     return (
         df[["drug_name", "dose", "form", "route"]]
         .dropna(subset=["drug_name"])
